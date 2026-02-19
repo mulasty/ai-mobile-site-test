@@ -1,0 +1,63 @@
+name: Codex Issue Autofix
+
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  implement-issue:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request == null
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate code from issue using Codex/OpenAI
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.2' }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python scripts/codex_issue_implement.py
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes generated."
+            exit 0
+          fi
+
+          git config user.name "codex-bot"
+          git config user.email "codex-bot@users.noreply.github.com"
+
+          SHORT_TITLE=$(echo "${{ github.event.issue.title }}" | tr '\n' ' ' | cut -c1-80)
+          git add index.html style.css script.js
+          git commit -m "feat: implement issue #${{ github.event.issue.number }} - ${SHORT_TITLE}"
+          git push
+
+      - name: Comment on issue
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          BODY="Automated implementation completed. Commit: ${SHA}"
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -d "{\"body\":\"${BODY}\"}" > /dev/null
