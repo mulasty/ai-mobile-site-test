@@ -16,12 +16,20 @@ jobs:
       TARGET_BRANCH: ${{ vars.AUTO_IMPLEMENT_BRANCH || 'new-app-mula-group' }}
 
     steps:
-      - name: Checkout
+- name: Normalize TARGET_BRANCH
+        id: norm
+        run: |
+          RAW="${TARGET_BRANCH}"
+          CLEAN="$(echo -n "$RAW" | tr -d '\r\n\t ' | sed 's/[?]//g')"
+          echo "raw=[$RAW]"
+          echo "clean=[$CLEAN]"
+          echo "TARGET_BRANCH_CLEAN=$CLEAN" >> $GITHUB_ENV
+
+      - - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ env.TARGET_BRANCH }}
-
+          ref: ${{ env.TARGET_BRANCH_CLEAN }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
