@@ -11,12 +11,17 @@ permissions:
 jobs:
   implement-issue:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     if: github.event.issue.pull_request == null
 
     env:
       TARGET_BRANCH: ${{ vars.AUTO_IMPLEMENT_BRANCH || 'new-app-mula-group' }}
 
     steps:
+      # -----------------------------
+      # Normalize branch
+      # -----------------------------
       - name: Normalize TARGET_BRANCH
         run: |
           RAW="${TARGET_BRANCH}"
@@ -25,17 +30,26 @@ jobs:
           echo "clean=[$CLEAN]"
           echo "TARGET_BRANCH_CLEAN=$CLEAN" >> "$GITHUB_ENV"
 
+      # -----------------------------
+      # Checkout
+      # -----------------------------
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH_CLEAN }}
 
+      # -----------------------------
+      # Python
+      # -----------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # -----------------------------
+      # AI GENERATION
+      # -----------------------------
       - name: Generate code from issue using Codex/OpenAI
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -46,6 +60,9 @@ jobs:
         run: |
           python scripts/codex_issue_implement.py
 
+      # -----------------------------
+      # Commit + Push
+      # -----------------------------
       - name: Commit and push changes
         run: |
           if git diff --quiet; then
@@ -57,20 +74,49 @@ jobs:
           git config user.email "codex-bot@users.noreply.github.com"
 
           SHORT_TITLE=$(echo "${{ github.event.issue.title }}" | tr '\n' ' ' | cut -c1-80)
+
           git add index.html style.css script.js
           git commit -m "feat: implement issue #${{ github.event.issue.number }} - ${SHORT_TITLE}"
 
           git push origin "HEAD:${TARGET_BRANCH_CLEAN}"
 
+      # -----------------------------
+      # VERCEL DEPLOY
+      # -----------------------------
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+
+      - name: Deploy to Vercel
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          URL=$(vercel \
+            --prod \
+            --yes \
+            --token=$VERCEL_TOKEN \
+            --scope=${{ secrets.VERCEL_ORG_ID }})
+
+          echo "DEPLOY_URL=$URL" >> $GITHUB_ENV
+
+      # -----------------------------
+      # Comment with deploy link
+      # -----------------------------
       - name: Comment on issue
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SHA=$(git rev-parse --short HEAD)
-          BODY="Automated implementation completed. Commit: ${SHA}"
+
+          BODY="🚀 Automated implementation completed!
+
+          🔗 Live deploy: ${DEPLOY_URL}
+
+          Commit: ${SHA}"
+
           curl -sS -X POST \
             -H "Authorization: Bearer ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" \
-            -d "{\"body\":\"${BODY}\"}" > /dev/null
+            -d "$(jq -nc --arg body "$BODY" '{body:$body}')"
