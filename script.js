@@ -21,6 +21,74 @@
     });
   });
 
+  // Mobile nav
+  const navToggle = document.getElementById("navToggle");
+  const navMenu = document.getElementById("navMenu");
+
+  function setNavOpen(open) {
+    if (!navToggle || !navMenu) return;
+    navMenu.classList.toggle("is-open", open);
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    navToggle.setAttribute("aria-label", open ? "Zamknij menu" : "Otwórz menu");
+  }
+
+  if (navToggle && navMenu) {
+    navToggle.addEventListener("click", () => {
+      const isOpen = navMenu.classList.contains("is-open");
+      setNavOpen(!isOpen);
+    });
+
+    navMenu.addEventListener("click", (e) => {
+      const a = e.target && e.target.closest ? e.target.closest("a") : null;
+      if (a) setNavOpen(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setNavOpen(false);
+    });
+
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!t) return;
+      if (t === navToggle || navToggle.contains(t)) return;
+      if (t === navMenu || navMenu.contains(t)) return;
+      setNavOpen(false);
+    });
+  }
+
+  // Active section highlight in nav
+  const sectionIds = ["hero", "o-nas", "jak-dzialamy", "cennik", "kontakt"];
+  const navAnchors = new Map();
+  document.querySelectorAll('.nav-list a[href^="#"]').forEach((a) => {
+    const href = a.getAttribute("href");
+    if (href && href.startsWith("#")) navAnchors.set(href.slice(1), a);
+  });
+
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  if (sections.length) {
+    const ioNav = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0));
+
+        if (!visible.length) return;
+        const id = visible[0].target.id;
+
+        for (const [sid, a] of navAnchors.entries()) {
+          if (!a) continue;
+          a.setAttribute("aria-current", sid === id ? "true" : "false");
+        }
+      },
+      { threshold: [0.22, 0.35, 0.5], rootMargin: "-20% 0px -65% 0px" }
+    );
+
+    sections.forEach((s) => ioNav.observe(s));
+  }
+
   // Back to top button
   const toTopBtn = document.getElementById("toTop");
 
@@ -67,6 +135,169 @@
     animated.forEach((el) => el.classList.add("is-inview"));
   }
 
+  // Process animation
+  const processStepsWrap = document.getElementById("processSteps");
+  const processTitle = document.getElementById("processTitle");
+  const processDesc = document.getElementById("processDesc");
+  const processBullets = document.getElementById("processBullets");
+  const processPanel = document.getElementById("processPanel");
+  const processToggle = document.getElementById("processToggle");
+  const processNext = document.getElementById("processNext");
+  const processHint = document.getElementById("processHint");
+
+  const processData = [
+    {
+      title: "Audyt i cele",
+      desc: "Ustalamy, co ma się zmienić: gdzie uciekają godziny, gdzie pojawiają się błędy i jakie dane muszą płynąć między narzędziami.",
+      bullets: [
+        "Krótka rozmowa + przykłady z Twojej firmy",
+        "Priorytetyzacja: szybkie wygrane vs. duże projekty",
+        "Wstępna wycena i plan"
+      ]
+    },
+    {
+      title: "Mapa procesu",
+      desc: "Rozpisujemy krok po kroku: kto, kiedy i na jakich danych pracuje. Wychwytujemy wąskie gardła i miejsca na automatyzację.",
+      bullets: [
+        "Schemat przepływu (blokowo) + odpowiedzialności",
+        "Lista integracji i źródeł danych",
+        "Ryzyka i wymagania (np. RODO, uprawnienia)"
+      ]
+    },
+    {
+      title: "Prototyp",
+      desc: "Budujemy pierwszą wersję automatyzacji, żeby szybko zweryfikować założenia i dopasować logikę do realnych danych.",
+      bullets: [
+        "Szybkie wdrożenie w środowisku testowym",
+        "Obsługa wyjątków i podstawowe logi",
+        "Iteracje na podstawie feedbacku"
+      ]
+    },
+    {
+      title: "Wdrożenie",
+      desc: "Przenosimy rozwiązanie na produkcję, konfigurujemy integracje i dbamy o stabilność działania w codziennym użyciu.",
+      bullets: [
+        "Konfiguracja webhooków/API i uprawnień",
+        "Wersjonowanie i backup konfiguracji",
+        "Ustalenie KPI i metryk"
+      ]
+    },
+    {
+      title: "Testy i szkolenie",
+      desc: "Testujemy scenariusze brzegowe, przygotowujemy instrukcję i przekazujemy proces zespołowi, żeby każdy wiedział co i jak działa.",
+      bullets: [
+        "Testy danych, błędów i obciążeń",
+        "Dokumentacja + checklisty",
+        "Szkolenie użytkowników"
+      ]
+    },
+    {
+      title: "Opieka i rozwój",
+      desc: "Monitorujemy, poprawiamy i rozwijamy automatyzacje. Gdy firma rośnie, procesy też muszą nadążać.",
+      bullets: [
+        "Monitoring i alerty (np. błędy, limity)",
+        "Optymalizacje kosztów i czasu wykonania",
+        "Nowe automatyzacje w kolejce"
+      ]
+    }
+  ];
+
+  let activeStep = 0;
+  let timer = null;
+  let isPaused = prefersReducedMotion; // if reduced motion, start paused
+
+  function renderProcess(stepIndex, { focusPanel = false } = {}) {
+    const idx = Math.max(0, Math.min(processData.length - 1, stepIndex));
+    activeStep = idx;
+
+    const data = processData[idx];
+    if (processTitle) processTitle.textContent = data.title;
+    if (processDesc) processDesc.textContent = data.desc;
+
+    if (processBullets) {
+      processBullets.innerHTML = "";
+      for (const b of data.bullets) {
+        const li = document.createElement("li");
+        li.textContent = b;
+        processBullets.appendChild(li);
+      }
+    }
+
+    const stepButtons = processStepsWrap ? Array.from(processStepsWrap.querySelectorAll(".process-step")) : [];
+    stepButtons.forEach((btn) => {
+      const s = Number(btn.dataset.step);
+      const isActive = s === idx;
+      btn.classList.toggle("is-active", isActive);
+      btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    if (processPanel) {
+      processPanel.setAttribute("aria-labelledby", `step-${idx}`);
+      if (focusPanel) processPanel.focus({ preventScroll: true });
+    }
+  }
+
+  function stopProcessLoop() {
+    if (timer) {
+      window.clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function startProcessLoop() {
+    stopProcessLoop();
+    if (prefersReducedMotion) return;
+    if (isPaused) return;
+
+    timer = window.setInterval(() => {
+      renderProcess((activeStep + 1) % processData.length);
+    }, 2500);
+  }
+
+  function setPaused(paused, { userInitiated = false } = {}) {
+    isPaused = paused;
+    if (processToggle) {
+      processToggle.textContent = paused ? "Wznów" : "Pauza";
+      processToggle.setAttribute("aria-pressed", paused ? "true" : "false");
+    }
+
+    if (processHint && userInitiated) {
+      processHint.textContent = paused
+        ? "Animacja zatrzymana. Kliknij „Wznów”, aby kontynuować, lub wybierz inny krok."
+        : "Animacja podświetla kroki co kilka sekund. Kliknij krok, aby zatrzymać.";
+    }
+
+    if (paused) stopProcessLoop();
+    else startProcessLoop();
+  }
+
+  if (processStepsWrap && processData.length) {
+    renderProcess(0);
+    setPaused(isPaused);
+    startProcessLoop();
+
+    processStepsWrap.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest(".process-step") : null;
+      if (!btn) return;
+      const idx = Number(btn.dataset.step);
+      renderProcess(idx, { focusPanel: true });
+      setPaused(true, { userInitiated: true });
+    });
+
+    if (processToggle) {
+      processToggle.addEventListener("click", () => {
+        setPaused(!isPaused, { userInitiated: true });
+      });
+    }
+
+    if (processNext) {
+      processNext.addEventListener("click", () => {
+        renderProcess((activeStep + 1) % processData.length, { focusPanel: true });
+        setPaused(true, { userInitiated: true });
+      });
+    }
+  }
+
   // Contact form validation (no backend)
   const form = document.getElementById("contactForm");
   const successEl = document.getElementById("formSuccess");
@@ -93,13 +324,13 @@
         return "";
       }
     },
-    subject: {
-      el: document.getElementById("subject"),
-      err: document.getElementById("err-subject"),
+    company: {
+      el: document.getElementById("company"),
+      err: document.getElementById("err-company"),
       validate: (v) => {
         const value = v.trim();
-        if (!value) return "Podaj temat.";
-        if (value.length < 3) return "Temat musi mieć co najmniej 3 znaki.";
+        if (!value) return "";
+        if (value.length < 2) return "Nazwa firmy jest zbyt krótka.";
         return "";
       }
     },
@@ -143,7 +374,7 @@
 
   function validateAll() {
     let ok = true;
-    (Object.keys(fields)).forEach((k) => {
+    Object.keys(fields).forEach((k) => {
       const valid = validateField(k);
       ok = ok && valid;
     });

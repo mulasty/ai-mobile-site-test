@@ -20,9 +20,16 @@
   <header class="site-header" id="top">
     <div class="container header-inner">
       <a class="logo" href="#hero" aria-label="Przejdź do początku strony">Mulagroup Automatyzacje</a>
-      <nav aria-label="Nawigacja główna">
-        <ul class="nav-list">
+
+      <nav class="nav" aria-label="Nawigacja główna">
+        <button class="nav-toggle" type="button" id="navToggle" aria-label="Otwórz menu" aria-controls="navMenu" aria-expanded="false">
+          <span class="nav-toggle-icon" aria-hidden="true"></span>
+          <span class="nav-toggle-text">Menu</span>
+        </button>
+
+        <ul class="nav-list" id="navMenu">
           <li><a href="#o-nas">O nas</a></li>
+          <li><a href="#jak-dzialamy">Jak działamy</a></li>
           <li><a href="#cennik">Cennik</a></li>
           <li><a href="#kontakt">Kontakt</a></li>
         </ul>
@@ -32,6 +39,12 @@
 
   <main id="main">
     <section id="hero" class="hero" aria-label="Sekcja powitalna">
+      <!--
+        Hero background image source (free stock):
+        https://unsplash.com/photos/Fi-GJaLRGKc (photo id: 1551288049-bebda4e38f71)
+        License: Unsplash License (free to use)
+        https://unsplash.com/license
+      -->
       <div class="container hero-inner">
         <div class="hero-content" data-animate>
           <p class="hero-kicker">Automatyzacje • Integracje • Oszczędność czasu</p>
@@ -110,6 +123,71 @@
             <h3>Stabilność i monitoring</h3>
             <p>Dodajemy logikę błędów, alerty i raporty, żeby automatyzacje działały przewidywalnie.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="jak-dzialamy" class="section" aria-label="Jak działamy">
+      <div class="container">
+        <div class="section-head" data-animate>
+          <h2>Jak działamy</h2>
+          <p class="section-lead">Przejrzysty proces od audytu do wdrożenia. Kliknij krok, aby zatrzymać animację i zobaczyć szczegóły.</p>
+        </div>
+
+        <div class="process" data-animate>
+          <div class="process-grid" aria-label="Proces wdrożenia" role="group">
+            <div class="process-steps" role="tablist" aria-label="Kroki procesu" id="processSteps">
+              <button class="process-step" type="button" role="tab" aria-selected="true" aria-controls="processPanel" id="step-0" data-step="0">
+                <span class="step-index" aria-hidden="true">1</span>
+                <span class="step-title">Audyt i cele</span>
+                <span class="step-meta">30–60 min</span>
+              </button>
+              <button class="process-step" type="button" role="tab" aria-selected="false" aria-controls="processPanel" id="step-1" data-step="1">
+                <span class="step-index" aria-hidden="true">2</span>
+                <span class="step-title">Mapa procesu</span>
+                <span class="step-meta">warsztat</span>
+              </button>
+              <button class="process-step" type="button" role="tab" aria-selected="false" aria-controls="processPanel" id="step-2" data-step="2">
+                <span class="step-index" aria-hidden="true">3</span>
+                <span class="step-title">Prototyp</span>
+                <span class="step-meta">3–7 dni</span>
+              </button>
+              <button class="process-step" type="button" role="tab" aria-selected="false" aria-controls="processPanel" id="step-3" data-step="3">
+                <span class="step-index" aria-hidden="true">4</span>
+                <span class="step-title">Wdrożenie</span>
+                <span class="step-meta">produkcyjnie</span>
+              </button>
+              <button class="process-step" type="button" role="tab" aria-selected="false" aria-controls="processPanel" id="step-4" data-step="4">
+                <span class="step-index" aria-hidden="true">5</span>
+                <span class="step-title">Testy i szkolenie</span>
+                <span class="step-meta">handover</span>
+              </button>
+              <button class="process-step" type="button" role="tab" aria-selected="false" aria-controls="processPanel" id="step-5" data-step="5">
+                <span class="step-index" aria-hidden="true">6</span>
+                <span class="step-title">Opieka i rozwój</span>
+                <span class="step-meta">ciągłe</span>
+              </button>
+            </div>
+
+            <div class="process-panel" id="processPanel" role="tabpanel" aria-labelledby="step-0" tabindex="0">
+              <div class="process-panel-head">
+                <h3 class="process-panel-title" id="processTitle">Audyt i cele</h3>
+                <div class="process-panel-actions" role="group" aria-label="Sterowanie animacją procesu">
+                  <button class="btn btn-secondary btn-sm" type="button" id="processToggle" aria-pressed="false">Pauza</button>
+                  <button class="btn btn-secondary btn-sm" type="button" id="processNext">Następny</button>
+                </div>
+              </div>
+              <p class="process-panel-desc" id="processDesc">
+                Ustalamy, co ma się zmienić: gdzie uciekają godziny, gdzie pojawiają się błędy i jakie dane muszą płynąć między narzędziami.
+              </p>
+              <ul class="process-panel-list" id="processBullets" aria-label="Szczegóły kroku">
+                <li>Krótka rozmowa + przykłady z Twojej firmy</li>
+                <li>Priorytetyzacja: szybkie wygrane vs. duże projekty</li>
+                <li>Wstępna wycena i plan</li>
+              </ul>
+              <p class="process-hint" id="processHint">Animacja podświetla kroki co kilka sekund. Kliknij krok, aby zatrzymać.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -197,9 +275,9 @@
             </div>
 
             <div class="form-row">
-              <label for="subject">Temat</label>
-              <input id="subject" name="subject" type="text" required minlength="3" />
-              <p class="field-error" id="err-subject" role="alert" aria-live="polite"></p>
+              <label for="company">Firma <span class="label-optional">(opcjonalnie)</span></label>
+              <input id="company" name="company" type="text" autocomplete="organization" />
+              <p class="field-error" id="err-company" role="alert" aria-live="polite"></p>
             </div>
 
             <div class="form-row">
