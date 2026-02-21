@@ -20,6 +20,7 @@ def read_file(path: Path) -> str:
 
 def call_openai(api_key: str, model: str, system_prompt: str, user_prompt: str) -> str:
     url = "https://api.openai.com/v1/chat/completions"
+
     payload = {
         "model": model,
         "temperature": 0.2,
@@ -31,6 +32,7 @@ def call_openai(api_key: str, model: str, system_prompt: str, user_prompt: str) 
     }
 
     data = json.dumps(payload).encode("utf-8")
+
     req = urllib.request.Request(
         url=url,
         data=data,
@@ -41,22 +43,26 @@ def call_openai(api_key: str, model: str, system_prompt: str, user_prompt: str) 
         },
     )
 
-    try:
-last_exc = None
+    last_exc = None
+
+    # 🔥 retry + większy timeout (bez zmiany logiki)
     for attempt in range(3):
         try:
             with urllib.request.urlopen(req, timeout=600) as response:
                 raw = response.read().decode("utf-8")
             break
-        except (TimeoutError, urllib.error.URLError) as exc:
+
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"OpenAI HTTPError {exc.code}: {body}") from exc
+
+        except (urllib.error.URLError, TimeoutError) as exc:
             last_exc = exc
-            time.sleep(5 * (attempt + 1))
+            wait = 5 * (attempt + 1)
+            print(f"[WARN] OpenAI timeout/network error (attempt {attempt+1}/3). Retrying in {wait}s...")
+            time.sleep(wait)
     else:
         raise RuntimeError(f"OpenAI request timed out after retries: {last_exc}") from last_exc
-        
-        raise RuntimeError(f"OpenAI HTTPError {exc.code}: {body}") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"OpenAI URLError: {exc}") from exc
 
     parsed = json.loads(raw)
     return parsed["choices"][0]["message"]["content"]
@@ -69,7 +75,7 @@ def parse_json_content(text: str) -> dict:
     except json.JSONDecodeError:
         pass
 
-    # Fallback if model wraps JSON in extra text.
+    # fallback jeśli model doda tekst
     match = re.search(r"\{.*\}", text, flags=re.DOTALL)
     if not match:
         raise RuntimeError("Model response does not contain JSON object.")
@@ -77,7 +83,10 @@ def parse_json_content(text: str) -> dict:
 
 
 def validate_output(obj: dict) -> None:
-    missing = [name for name in TARGET_FILES if name not in obj or not isinstance(obj[name], str)]
+    missing = [
+        name for name in TARGET_FILES
+        if name not in obj or not isinstance(obj[name], str)
+    ]
     if missing:
         raise RuntimeError(f"Missing or invalid keys in model output: {', '.join(missing)}")
 
