@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -41,10 +42,18 @@ def call_openai(api_key: str, model: str, system_prompt: str, user_prompt: str) 
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=120) as response:
-            raw = response.read().decode("utf-8")
-    except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
+last_exc = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=600) as response:
+                raw = response.read().decode("utf-8")
+            break
+        except (TimeoutError, urllib.error.URLError) as exc:
+            last_exc = exc
+            time.sleep(5 * (attempt + 1))
+    else:
+        raise RuntimeError(f"OpenAI request timed out after retries: {last_exc}") from last_exc
+        
         raise RuntimeError(f"OpenAI HTTPError {exc.code}: {body}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"OpenAI URLError: {exc}") from exc
