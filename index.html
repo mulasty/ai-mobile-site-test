@@ -3,76 +3,230 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Mobile Site Test</title>
-  <meta name="description" content="Bazowy landing page z sekcja Hero, oferta i kontakt.">
+  <title>90. urodziny Babci Reginy Muła</title>
+  <meta name="description" content="Ciepła i elegancka strona urodzinowa na 90. urodziny Babci Reginy Muła: życzenia, plan dnia, galeria wspomnień, odliczanie i RSVP.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="#hero">AI Mobile</a>
-      <nav aria-label="Nawigacja glowna">
+      <a class="logo" href="#hero" aria-label="Przejdź do początku strony">90 lat Babci Reginy</a>
+      <nav aria-label="Nawigacja główna">
         <ul class="nav-list">
-          <li><a href="#oferta">Oferta</a></li>
-          <li><a href="#kontakt">Kontakt</a></li>
+          <li><a href="#zyczenia">Życzenia</a></li>
+          <li><a href="#plan">Plan dnia</a></li>
+          <li><a href="#galeria">Galeria</a></li>
+          <li><a href="#odliczanie">Odliczanie</a></li>
+          <li><a href="#rsvp">Kontakt / RSVP</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section id="hero" class="hero" aria-label="Sekcja Hero">
+  <main id="main">
+    <section id="hero" class="hero" aria-label="Nagłówek strony">
       <div class="container hero-grid">
         <div class="hero-content">
-          <p class="hero-kicker">Nowoczesna strona bez chaosu</p>
-          <h1>Budujemy szybkie i czytelne landing page dla Twojej marki</h1>
+          <p class="hero-kicker">Rodzinne spotkanie • Ciepło • Wdzięczność</p>
+          <h1>90. urodziny Babci Reginy Muła</h1>
           <p class="hero-lead">
-            Minimalny, stabilny start projektu: jasny przekaz, poprawna struktura
-            i gotowy fundament pod kolejne wdrozenia.
+            Babciu, dziękujemy za Twoją miłość, spokój i mądrość. Ten dzień jest o Tobie —
+            o wspomnieniach, uśmiechach i wspólnym świętowaniu.
           </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#kontakt">Zaczynamy</a>
-            <a class="btn btn-secondary" href="#oferta">Zobacz oferte</a>
+
+          <div class="hero-actions" role="group" aria-label="Szybkie przejścia">
+            <a class="btn btn-primary" href="#rsvp" aria-label="Przejdź do sekcji Kontakt i RSVP">Potwierdź obecność</a>
+            <a class="btn btn-secondary" href="#plan" aria-label="Przejdź do sekcji Plan dnia">Zobacz plan dnia</a>
           </div>
-          <ul class="hero-benefits" aria-label="Najwazniejsze korzysci">
-            <li>Szybkie ladowanie</li>
-            <li>Responsywny uklad</li>
-            <li>Latwa edycja tresci</li>
+
+          <ul class="hero-benefits" aria-label="Najważniejsze informacje">
+            <li>Elegancko i rodzinnie</li>
+            <li>Plan dnia w jednym miejscu</li>
+            <li>Galeria wspomnień</li>
           </ul>
         </div>
-        <div class="hero-visual">
+
+        <div class="hero-visual" aria-label="Dekoracyjna fotografia">
           <img
-            src="https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1200&q=80"
-            alt="Widok nowoczesnego stanowiska pracy z komputerem"
+            src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=1400&q=80"
+            alt="Ciepłe, eleganckie światło świec na stole"
             loading="lazy">
         </div>
       </div>
     </section>
 
-    <section id="oferta" class="section">
+    <section id="zyczenia" class="section">
       <div class="container">
-        <h2>Oferta</h2>
-        <p>
-          Tworzymy landing page od zera lub rozwijamy obecny projekt:
-          struktura HTML, stylowanie CSS i interakcje JavaScript.
-        </p>
+        <h2>Życzenia</h2>
+        <div class="cards-grid" role="list" aria-label="Blok życzeń">
+          <article class="card" role="listitem">
+            <h3>Zdrowia i spokoju</h3>
+            <p>
+              Babciu, życzymy Ci przede wszystkim zdrowia, codziennego spokoju i sił na każdy dzień.
+              Niech otaczają Cię życzliwi ludzie i dobre myśli.
+            </p>
+          </article>
+          <article class="card" role="listitem">
+            <h3>Radości w sercu</h3>
+            <p>
+              Niech każdy poranek przynosi powód do uśmiechu, a drobne chwile zamieniają się w piękne wspomnienia.
+            </p>
+          </article>
+          <article class="card" role="listitem">
+            <h3>Bliskości rodziny</h3>
+            <p>
+              Dziękujemy, że jesteś. Życzymy Ci ciepła rodzinnego, rozmów przy herbacie i wielu wspólnych spotkań.
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section id="kontakt" class="section section-alt">
+    <section id="plan" class="section section-alt" aria-label="Plan dnia">
       <div class="container">
-        <h2>Kontakt</h2>
-        <p>Napisz wiadomosc i opisz cel strony. Odpowiemy z planem wdrozenia.</p>
-        <a class="btn btn-primary" href="mailto:kontakt@example.com">kontakt@example.com</a>
+        <h2>Plan dnia</h2>
+        <p class="section-lead">Poniżej przykładowy harmonogram — godziny i punkty programu można łatwo podmienić.</p>
+
+        <ol class="timeline" aria-label="Harmonogram wydarzenia">
+          <li class="timeline-item">
+            <div class="time" aria-label="Godzina">14:00</div>
+            <div class="details">
+              <h3>Powitanie gości</h3>
+              <p>Placeholder: przyjazd, kawa/herbata, chwila na rozmowy.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <div class="time" aria-label="Godzina">15:00</div>
+            <div class="details">
+              <h3>Uroczysty toast i życzenia</h3>
+              <p>Placeholder: wspólne życzenia, krótkie przemówienia.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <div class="time" aria-label="Godzina">16:00</div>
+            <div class="details">
+              <h3>Obiad</h3>
+              <p>Placeholder: rodzinny posiłek, czas na zdjęcia.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <div class="time" aria-label="Godzina">17:30</div>
+            <div class="details">
+              <h3>Tort urodzinowy</h3>
+              <p>Placeholder: świeczki, wspólne śpiewanie, krojenie tortu.</p>
+            </div>
+          </li>
+          <li class="timeline-item">
+            <div class="time" aria-label="Godzina">18:30</div>
+            <div class="details">
+              <h3>Wspomnienia i muzyka</h3>
+              <p>Placeholder: oglądanie zdjęć, rozmowy, spokojna muzyka.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="galeria" class="section" aria-label="Galeria wspomnień">
+      <div class="container">
+        <h2>Galeria wspomnień</h2>
+        <p class="section-lead">Miejsce na 6 zdjęć i podpisy (placeholder). Układ dopasowuje się do ekranu.</p>
+
+        <div class="gallery" role="list" aria-label="Siatka zdjęć">
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 1" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 1</figcaption>
+          </figure>
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 2" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 2</figcaption>
+          </figure>
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 3" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 3</figcaption>
+          </figure>
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 4" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 4</figcaption>
+          </figure>
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 5" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 5</figcaption>
+          </figure>
+          <figure class="gallery-card" role="listitem">
+            <img src="https://images.unsplash.com/photo-1520975958225-1c1f0b7b1b6a?auto=format&fit=crop&w=900&q=80" alt="Placeholder zdjęcia 6" loading="lazy">
+            <figcaption>Placeholder: podpis do zdjęcia 6</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="odliczanie" class="section section-alt" aria-label="Odliczanie do wydarzenia">
+      <div class="container">
+        <h2>Odliczanie do świętowania</h2>
+        <p class="section-lead">Do spotkania pozostało:</p>
+
+        <div class="countdown" aria-live="polite" aria-atomic="true">
+          <div class="countdown-item">
+            <div class="countdown-value" id="cd-days">0</div>
+            <div class="countdown-label">dni</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="cd-hours">0</div>
+            <div class="countdown-label">godzin</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="cd-minutes">0</div>
+            <div class="countdown-label">minut</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-value" id="cd-seconds">0</div>
+            <div class="countdown-label">sekund</div>
+          </div>
+        </div>
+
+        <p class="countdown-note" id="countdown-note">Data wydarzenia jest ustawiona w pliku <code>script.js</code>.</p>
+      </div>
+    </section>
+
+    <section id="rsvp" class="section" aria-label="Kontakt i RSVP">
+      <div class="container">
+        <h2>Kontakt / RSVP</h2>
+        <p class="section-lead">
+          Daj znać, czy będziesz — pomoże nam to w organizacji. Dane poniżej są placeholderami.
+        </p>
+
+        <div class="rsvp-actions" role="group" aria-label="Sposoby kontaktu">
+          <a class="btn btn-primary" href="mailto:rodzina@example.com?subject=RSVP%20-%2090.%20urodziny%20Babci%20Reginy" aria-label="Wyślij e-mail w sprawie RSVP">Napisz e-mail</a>
+          <a class="btn btn-secondary" href="tel:+48123123123" aria-label="Zadzwoń w sprawie RSVP">Zadzwoń</a>
+        </div>
+
+        <div class="info-grid" aria-label="Dodatkowe informacje">
+          <div class="info-card">
+            <h3>Miejsce</h3>
+            <p>Placeholder: adres i wskazówki dojazdu.</p>
+          </div>
+          <div class="info-card">
+            <h3>Uwagi</h3>
+            <p>Placeholder: alergie, preferencje, informacje organizacyjne.</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2026 AI Mobile Site Test</p>
+  <footer class="site-footer" aria-label="Stopka">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year">2026</span> • 90. urodziny Babci Reginy Muła</p>
+      <a class="footer-link" href="#hero" aria-label="Wróć do początku strony">Do góry</a>
     </div>
   </footer>
+
+  <button class="to-top" type="button" id="toTop" aria-label="Przewiń do góry" title="Do góry">
+    <span aria-hidden="true">↑</span>
+  </button>
 
   <script src="script.js"></script>
 </body>
