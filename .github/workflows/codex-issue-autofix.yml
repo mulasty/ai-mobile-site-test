@@ -12,24 +12,25 @@ jobs:
   implement-issue:
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request == null
+
     env:
       TARGET_BRANCH: ${{ vars.AUTO_IMPLEMENT_BRANCH || 'new-app-mula-group' }}
 
     steps:
-- name: Normalize TARGET_BRANCH
-        id: norm
+      - name: Normalize TARGET_BRANCH
         run: |
           RAW="${TARGET_BRANCH}"
           CLEAN="$(echo -n "$RAW" | tr -d '\r\n\t ' | sed 's/[?]//g')"
           echo "raw=[$RAW]"
           echo "clean=[$CLEAN]"
-          echo "TARGET_BRANCH_CLEAN=$CLEAN" >> $GITHUB_ENV
+          echo "TARGET_BRANCH_CLEAN=$CLEAN" >> "$GITHUB_ENV"
 
-      - - name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH_CLEAN }}
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -58,7 +59,8 @@ jobs:
           SHORT_TITLE=$(echo "${{ github.event.issue.title }}" | tr '\n' ' ' | cut -c1-80)
           git add index.html style.css script.js
           git commit -m "feat: implement issue #${{ github.event.issue.number }} - ${SHORT_TITLE}"
-          git push origin HEAD:${TARGET_BRANCH}
+
+          git push origin "HEAD:${TARGET_BRANCH_CLEAN}"
 
       - name: Comment on issue
         if: success()
@@ -70,5 +72,5 @@ jobs:
           curl -sS -X POST \
             -H "Authorization: Bearer ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" \
             -d "{\"body\":\"${BODY}\"}" > /dev/null
